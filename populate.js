@@ -97,9 +97,17 @@ async function createItems() {
 		units_in_stock: 50,
 	};
 
+	const beretta = {
+		name: 'Beretta M9',
+		description: '9mm automatic pistol',
+		category: categories[1],
+		units_in_stock: 25,
+	};
+
 	await Promise.all([
 		itemCreate(0, rifles),
 		itemCreate(1, colt45),
 		itemCreate(2, helmets),
+		itemCreate(3, beretta),
 	]);
 }

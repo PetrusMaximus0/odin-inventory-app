@@ -1,5 +1,10 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  h2= title
+  p Welcome to #{title}. 
+  p Click 
+    a(href="/catalog/items") All Items 
+    span to browse all items or 
+    a(href="/catalog/categories") All Categories 
+    span to browse items per category.

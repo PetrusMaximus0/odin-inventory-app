@@ -1,7 +1,7 @@
 extends layout
 
 block content 
-    h2 All items 
+    h2= title 
 
     if items.length
         ul.items-list 
@@ -13,7 +13,7 @@ block content
                         span #{item.description}
                     p 
                         span.bold Category: 
-                        span #{item.category.name}
+                        a(href=item.category.url+"/items")  #{item.category.name}
                     p 
                         span.bold Number of Units: 
                         span #{item.units_in_stock}

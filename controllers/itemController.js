@@ -5,7 +5,7 @@ exports.item_list = async function (req, res, next) {
 			.sort({ name: 1 })
 			.populate('category')
 			.exec();
-		res.render('item_list', { items: allItems });
+		res.render('item_list', { title: 'All items', items: allItems });
 	} catch (error) {
 		return next(error);
 	}

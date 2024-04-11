@@ -10,7 +10,7 @@ const CategorySchema = new mongoose.Schema({
 
 // Set up a virtual for url.
 CategorySchema.virtual('url').get(function () {
-	return `/catalog/category/${this._id}`;
+	return `/catalog/categories/${this._id}`;
 });
 
 module.exports = mongoose.model('Category', CategorySchema);
