@@ -1,0 +1,16 @@
+extends layout 
+
+block content 
+    h2 All categories
+
+    ul.categories-list
+        if categories.length
+            each category in categories
+                li
+                    h3 #{category.name}
+                    p #{category.description}
+                    div.categories-links
+                        a(href=category.url+"/update") Update
+                        a(href=category.url+"/delete") Delete
+        else
+            h3 There are no categories.

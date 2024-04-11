@@ -2,14 +2,19 @@ doctype html
 html
   head
     title= title
+    meta(http-equiv="Content-Type", content="text/html;charset=UTF-8")
+    meta(name="viewport", content="width-device-width, initial-scale=1")
     link(rel='stylesheet', href='/stylesheets/style.css')
-  body
   
-    header
-      p This is the header
+  body
+    header(style="display: flex; flex-direction: column;")
+      h1(style="padding: 0 1rem;") Inventory App
+      nav
+        a(href="/catalog/items") All Items 
+        a(href="/catalog/categories") All Categories
+        a(href="/catalog/items_new") New Item
+        a(href="/catalog/categories_new") New Category
 
-    main    
-      p This is the main
-      block content
-
-    footer This is the footer
+    hr
+    main(style="padding: 0 1rem")    
+      block content 
