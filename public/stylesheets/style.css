@@ -4,9 +4,6 @@ body {
   background-color: black;
   color: white; }
 
-.bold {
-  font-weight: 800; }
-
 a {
   color: lightskyblue;
   text-decoration: none; }
@@ -27,10 +24,13 @@ hr {
 li {
   list-style: none; }
 
-.categories-list {
+p {
+  margin: 0.2rem 0; }
+
+.categories-list, .items-list {
   padding: 0 0.25rem; }
 
-.categories-links {
+.categories-links, .items-links {
   display: flex;
   justify-content: flex-start;
   align-items: center;
@@ -38,5 +38,8 @@ li {
   text-decoration: none;
   color: lightskyblue;
   font-weight: 600; }
+
+.bold {
+  font-weight: 800; }
 
 /*# sourceMappingURL=style.css.map */

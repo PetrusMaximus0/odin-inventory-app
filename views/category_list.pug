@@ -2,9 +2,9 @@ extends layout
 
 block content 
     h2 All categories
-
-    ul.categories-list
-        if categories.length
+    
+    if categories.length
+        ul.categories-list
             each category in categories
                 li
                     h3 #{category.name}
@@ -12,5 +12,5 @@ block content
                     div.categories-links
                         a(href=category.url+"/update") Update
                         a(href=category.url+"/delete") Delete
-        else
-            h3 There are no categories.
+    else
+        p There are no categories.

@@ -32,7 +32,11 @@ li{
   list-style: none;
 }
 
-.categories{
+p{
+  margin: 0.2rem 0;
+}
+
+.categories, .items{
   &-list{
     padding: 0 0.25rem;
   }

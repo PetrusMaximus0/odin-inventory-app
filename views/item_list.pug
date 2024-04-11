@@ -1,0 +1,26 @@
+extends layout
+
+block content 
+    h2 All items 
+
+    if items.length
+        ul.items-list 
+            each item in items 
+                li 
+                    h3 #{item.name}                    
+                    p 
+                        span.bold Description:              
+                        span #{item.description}
+                    p 
+                        span.bold Category: 
+                        span #{item.category.name}
+                    p 
+                        span.bold Number of Units: 
+                        span #{item.units_in_stock}
+
+                    div.items-links
+                        a(href=item.url+"/update") Update
+                        a(href=item.url+"/delete") Delete
+                        
+    else
+        p There are no items.
