@@ -1,0 +1,30 @@
+{
+	"name": "odin-inventory-app",
+	"version": "0.0.0",
+	"private": true,
+	"engines": {
+		"node": ">= 20.12.1"
+	},
+	"scripts": {
+		"start": "node ./bin/www",
+		"devstart": "nodemon --env-file=.env ./bin/www",
+		"serverstart": "npm run devstart & DEBUG=odin-inventory-app:*"
+	},
+	"dependencies": {
+		"compression": "^1.7.4",
+		"cookie-parser": "~1.4.4",
+		"debug": "~2.6.9",
+		"express": "^4.19.2",
+		"express-rate-limit": "^7.2.0",
+		"express-validator": "^7.0.1",
+		"helmet": "^7.1.0",
+		"http-errors": "~1.6.3",
+		"mongoose": "^8.3.1",
+		"morgan": "~1.9.1",
+		"node-sass-middleware": "^1.1.0",
+		"pug": "^3.0.2"
+	},
+	"devDependencies": {
+		"nodemon": "^3.1.0"
+	}
+}
