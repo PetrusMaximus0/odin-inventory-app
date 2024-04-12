@@ -11,9 +11,13 @@ block content
                     p 
                         span.bold Description:              
                         span #{item.description}
+                                       
                     p 
-                        span.bold Category: 
-                        a(href=item.category.url+"/items")  #{item.category.name}
+                        span.bold Categories:
+                        each val, index in item.category
+                            a(href=val.url+"/items")  #{val.name}
+                            if index < item.category.length - 1
+                                |, &nbsp; 
                     p 
                         span.bold Number of Units: 
                         span #{item.units_in_stock}

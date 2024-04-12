@@ -39,6 +39,34 @@ p {
   color: lightskyblue;
   font-weight: 600; }
 
+.categories-form, .items-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  border: 1px solid white;
+  padding: 1rem; }
+  .categories-form .field, .items-form .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem; }
+
+.categories-btn, .items-btn {
+  padding: 0.50rem 1rem;
+  border: 2px solid;
+  font-weight: 600; }
+  .categories-btn-delete, .items-btn-delete {
+    background-color: black;
+    color: red;
+    border-color: red; }
+    .categories-btn-delete:hover, .items-btn-delete:hover {
+      background-color: red;
+      border-color: darkred;
+      color: black; }
+  .categories-btn-cancel:hover, .items-btn-cancel:hover {
+    background-color: lightskyblue;
+    color: black;
+    border-color: skyblue; }
+
 .bold {
   font-weight: 800; }
 

@@ -6,11 +6,7 @@ const ItemSchema = mongoose.Schema({
 	// an id will be automatically generated
 	name: { type: String, required: true, maxLenght: 100 },
 	description: { type: String, required: true, maxLenght: 250 },
-	category: {
-		type: mongoose.Schema.Types.ObjectId,
-		ref: 'Category',
-		required: true,
-	},
+	category: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Category' }],
 	units_in_stock: { type: mongoose.SchemaTypes.Number },
 });
 

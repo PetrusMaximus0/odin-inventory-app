@@ -2,9 +2,10 @@
 
 // Get arguments passed on command line
 const userArgs = process.argv.slice(2);
-
+//
 const Category = require('./models/category');
 const Item = require('./models/item');
+//
 const categories = [];
 const items = [];
 
@@ -20,8 +21,12 @@ async function main() {
 	await mongoose.connect(mongoDB);
 	console.log('Debug: Should be connected?');
 	//
-	await createCategories();
-	await createItems();
+	try {
+		await Promise.all([clearEverything(), createCategories(), createItems()]);
+	} catch (error) {
+		throw error;
+	}
+
 	//
 	console.log('Debug: Closing mongoose');
 	mongoose.connection.close();
@@ -58,6 +63,7 @@ async function createCategories() {
 			'Protective Gear',
 			'Gear designed to protect the operator'
 		),
+		categoryCreate(3, 'Firearms', 'All types of firearms'),
 	]);
 }
 
@@ -80,27 +86,27 @@ async function createItems() {
 	const rifles = {
 		name: 'G3A3',
 		description: '7.62x52mm NATO',
-		category: categories[0],
+		category: [categories[0], categories[3]],
 		units_in_stock: 20,
 	};
 
 	const colt45 = {
 		name: 'Colt 45',
 		description: '.45 Cal handgun for self defense',
-		category: categories[1],
+		category: [categories[1], categories[3]],
 		units_in_stock: 100,
 	};
 	const helmets = {
 		name: 'BH-A2',
 		description: 'Ballistic Helmet with a low profile',
-		category: categories[2],
+		category: [categories[2]],
 		units_in_stock: 50,
 	};
 
 	const beretta = {
 		name: 'Beretta M9',
 		description: '9mm automatic pistol',
-		category: categories[1],
+		category: [categories[1], categories[3]],
 		units_in_stock: 25,
 	};
 
@@ -110,4 +116,23 @@ async function createItems() {
 		itemCreate(2, helmets),
 		itemCreate(3, beretta),
 	]);
+}
+
+async function clearEverything() {
+	try {
+		const [itemsDeleted, categoriesDeleted] = await Promise.all([
+			Item.deleteMany({}),
+			Category.deleteMany({}),
+		]);
+		console.log(
+			'Deleted',
+			itemsDeleted,
+			'items and',
+			categoriesDeleted,
+			'categories.'
+		);
+	} catch (error) {
+		console.error('There was an error');
+		throw error;
+	}
 }

@@ -1,0 +1,25 @@
+extends layout 
+
+block content
+
+    div(style= "max-width: 30rem; display: grid")
+        h2(style="margin-left: auto; margin-right: auto") Category Form
+
+        form.categories-form(method="post")          
+            label.field(for="name") Name:
+                input(
+                    type="text", 
+                    name="name", 
+                    placeholder="Category name", 
+                    value=(undefined===name ? "" : name))
+            label.field(for="description") Description:
+                textarea(
+                    style="resize: none",
+                    name="description", 
+                    placeholder="A short description of this category", 
+                    cols="30", rows="10")= undefined===description ? '' : description        
+            button(type="submit") Submit    
+    if errors
+        ul 
+            for error in errors 
+                li!= error.msg

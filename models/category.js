@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const CategorySchema = new mongoose.Schema({
 	// an id will be automatically generated
 	name: { type: String, required: true, maxLenght: 100 },
-	description: { type: String, required: true, maxLenght: 250 },
+	description: { type: String, required: false, maxLenght: 250 },
 });
 
 // Set up a virtual for url.

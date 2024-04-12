@@ -18,6 +18,8 @@ const mongoDB = process.env.MONGODB_URI;
 
 main().catch((err) => {
 	console.error('Connection has failed.', err);
+	console.log('retrying....');
+	main();
 });
 
 async function main() {
@@ -63,5 +65,4 @@ app.use(function (err, req, res, next) {
 	res.status(err.status || 500);
 	res.render('error');
 });
-
 module.exports = app;

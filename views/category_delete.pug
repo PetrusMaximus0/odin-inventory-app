@@ -1,0 +1,19 @@
+extends layout 
+
+block content 
+
+    h2 Delete category
+
+    if  allItemsInCategory.length > 0
+        p #[strong Warning!] Deleting this category will remove it from the following items:
+        ul
+            each item in allItemsInCategory
+                li(style="list-style: disc") 
+                    p(style="font-weight: 600") #{item.name}
+
+    p(style="margin-bottom: 1rem") Are you sure you wish to delete the #{category.name} category ? 
+
+    form(style="display: flex; gap: 1rem;", method="POST")
+        button.categories-btn.categories-btn-delete(type="submit") Delete
+        a.categories-btn.categories-btn-cancel(href="/catalog/categories") Cancel
+    

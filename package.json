@@ -8,7 +8,7 @@
 	"scripts": {
 		"start": "node ./bin/www",
 		"devstart": "nodemon --env-file=.env ./bin/www",
-		"serverstart": "npm run devstart & DEBUG=odin-inventory-app:*"
+		"serverstart": "npm run devstart && DEBUG=odin-inventory-app:*"
 	},
 	"dependencies": {
 		"compression": "^1.7.4",
