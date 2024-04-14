@@ -22,7 +22,9 @@ async function main() {
 	console.log('Debug: Should be connected?');
 	//
 	try {
-		await Promise.all([clearEverything(), createCategories(), createItems()]);
+		await clearEverything();
+		await createCategories();
+		await createItems();
 	} catch (error) {
 		throw error;
 	}
@@ -50,7 +52,7 @@ async function createCategories() {
 	await Promise.all([
 		categoryCreate(
 			0,
-			'Battle Rifle',
+			'Battlerifle',
 			'A rifle suited for medium to long distance engagements.'
 		),
 		categoryCreate(
@@ -73,6 +75,7 @@ async function itemCreate(index, data) {
 		description: data.description,
 		category: data.category,
 		units_in_stock: data.units_in_stock,
+		price: data.price,
 	});
 
 	await item.save();
@@ -88,6 +91,7 @@ async function createItems() {
 		description: '7.62x52mm NATO',
 		category: [categories[0], categories[3]],
 		units_in_stock: 20,
+		price: 100,
 	};
 
 	const colt45 = {
@@ -95,12 +99,15 @@ async function createItems() {
 		description: '.45 Cal handgun for self defense',
 		category: [categories[1], categories[3]],
 		units_in_stock: 100,
+		price: 100,
 	};
 	const helmets = {
-		name: 'BH-A2',
-		description: 'Ballistic Helmet with a low profile',
+		name: 'Integrated Head Protection System (IHPS)',
+		description:
+			'Protection from pistol-fired projectiles and fragmentation.',
 		category: [categories[2]],
 		units_in_stock: 50,
+		price: 100,
 	};
 
 	const beretta = {
@@ -108,6 +115,7 @@ async function createItems() {
 		description: '9mm automatic pistol',
 		category: [categories[1], categories[3]],
 		units_in_stock: 25,
+		price: 100,
 	};
 
 	await Promise.all([

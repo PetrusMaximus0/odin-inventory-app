@@ -1,0 +1,24 @@
+extends layout 
+
+block content 
+
+    div.item-delete-wrapper
+        h2.heading Delete item 
+
+        p.item-delete-warning 
+            span.bold Warning: 
+            span Are you sure you wish to delete item #{name} ?   
+
+        form.item-delete-form(method="POST")
+            div.item-delete-password
+                label(for="password") Enter the password:
+                input(type="password", name="password", id="password", required)
+            
+            if error
+                p.password-error Password is invalid!
+
+            div.item-delete-submit
+                button.items-btn.items-btn-delete(type="submit") Delete
+                a.items-btn.items-btn-cancel(href="/catalog/items") Cancel
+
+

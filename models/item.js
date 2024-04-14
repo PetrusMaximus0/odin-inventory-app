@@ -5,9 +5,10 @@ const mongoose = require('mongoose');
 const ItemSchema = mongoose.Schema({
 	// an id will be automatically generated
 	name: { type: String, required: true, maxLenght: 100 },
-	description: { type: String, required: true, maxLenght: 250 },
+	description: { type: String, required: false, maxLenght: 250 },
 	category: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Category' }],
 	units_in_stock: { type: mongoose.SchemaTypes.Number },
+	price: { type: mongoose.SchemaTypes.Number, required: true },
 });
 
 // Set up a virtual for url

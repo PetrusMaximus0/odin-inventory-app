@@ -43,7 +43,7 @@ exports.category_new_get = async function (req, res, next) {
 // Post form for a new category
 exports.category_new_post = [
 	// Validate and sanitize fields
-	body('name').trim().isLength({ min: 0, max: 20 }).escape(),
+	body('name').trim().isLength({ min: 3, max: 20 }).escape(),
 	body('description')
 		.optional({ values: 'falsy' })
 		.trim()
@@ -116,3 +116,57 @@ exports.category_delete_post = async function (req, res, next) {
 		return next(error);
 	}
 };
+
+//
+exports.category_update_get = async function (req, res, next) {
+	try {
+		const category = await Category.findById(req.params.id).exec();
+
+		if (category === null) {
+			const error = new Error("Couldn't find the category!");
+			return next(error);
+		}
+		res.render('category_form', {
+			name: category.name,
+			description: category.description,
+		});
+	} catch (error) {
+		return next(error);
+	}
+};
+
+exports.category_update_post = [
+	// Verify And sanitize
+	body('name').trim().isLength({ min: 3, max: 20 }).escape(),
+	body('description')
+		.optional((values = 'falsy'))
+		.trim()
+		.isLength({ max: 200 })
+		.escape(),
+
+	async function (req, res, next) {
+		try {
+			// Take the errors out if they exist
+			const errors = validationResult(req);
+
+			if (!errors.isEmpty()) {
+				// There are Errors, render the form again with sanitized values and errors
+				res.render('category_form', {
+					name: req.body.name,
+					description: req.body.description,
+					errors: errors,
+				});
+			} else {
+				// Proceed updating the document
+				await Category.findByIdAndUpdate(req.params.id, {
+					name: req.body.name,
+					description: req.body.description,
+					_id: req.params.id,
+				});
+				res.redirect('/catalog/categories');
+			}
+		} catch (error) {
+			return next(error);
+		}
+	},
+];

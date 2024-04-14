@@ -7,7 +7,8 @@ block content
         ul.items-list 
             each item in items 
                 li 
-                    h3 #{item.name}                    
+                    h3 
+                        a(href=item.url+"/detail") #{item.name}                    
                     p 
                         span.bold Description:              
                         span #{item.description}
@@ -21,6 +22,10 @@ block content
                     p 
                         span.bold Number of Units: 
                         span #{item.units_in_stock}
+
+                    p 
+                        span.bold Price: 
+                        span #{item.price}
 
                     div.items-links
                         a(href=item.url+"/update") Update
