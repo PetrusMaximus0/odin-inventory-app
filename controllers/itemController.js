@@ -1,14 +1,11 @@
-const Item = require('../models/item');
-const Category = require('../models/category');
 const { body, validationResult } = require('express-validator');
+const itemQueries = require('../db/itemQueries');
+const categoryQueries = require('../db/categoryQueries');
 
 // List items
 exports.item_list = async function (req, res, next) {
 	try {
-		const allItems = await Item.find({})
-			.sort({ name: 1 })
-			.populate('category')
-			.exec();
+		const allItems = await itemQueries.getAll();
 		res.render('item_list', { title: 'All items', items: allItems });
 	} catch (error) {
 		return next(error);
@@ -18,9 +15,7 @@ exports.item_list = async function (req, res, next) {
 // Read an item
 exports.item_detail = async function (req, res, next) {
 	try {
-		const item = await Item.findById(req.params.id)
-			.populate('category')
-			.exec();
+		const item = await itemQueries.getById(req.params.id);
 		res.render('item_detail', { item: item });
 	} catch (error) {
 		return next(error);
@@ -30,12 +25,13 @@ exports.item_detail = async function (req, res, next) {
 // Create an item GET
 exports.item_new_get = async function (req, res, next) {
 	try {
-		const allCategories = await Category.find({}).exec();
+		const allCategories = await categoryQueries.getAll();
 		res.render('item_form', { allCategories: allCategories });
 	} catch (error) {
 		return next(error);
 	}
 };
+
 // Create an item POST
 exports.item_new_post = [
 	// Convert the category to an array
@@ -82,7 +78,7 @@ exports.item_new_post = [
 
 			if (!errors.isEmpty()) {
 				// There are errors, render the form again with the sanitized values and errors.
-				const allCategories = await Category.find({}).exec();
+				const allCategories = await categoryQueries.getAll();
 				res.render('item_form', {
 					item: newItem,
 					allCategories: allCategories,
@@ -90,7 +86,7 @@ exports.item_new_post = [
 				});
 			} else {
 				// No errors. Save the new item
-				await newItem.save();
+				await itemQueries.insert(newItem);
 				res.redirect('/catalog/items');
 			}
 		} catch (error) {
@@ -102,9 +98,10 @@ exports.item_new_post = [
 // Update an item GET
 exports.item_update_get = async function (req, res, next) {
 	try {
-		const [item, allCategories] = await Promise.all([
-			Item.findById(req.params.id).exec(),
-			Category.find().sort({ name: 1 }).exec(),
+		const [item, checkedCategories, allCategories] = await Promise.all([
+			itemQueries.getById(req.params.id),
+			itemQueries.getItemCategories(req.params.id),
+			categoryQueries.getAll(),
 		]);
 
 		if (item === null) {
@@ -112,9 +109,14 @@ exports.item_update_get = async function (req, res, next) {
 			return next(error);
 		}
 
+		// A Set will give significantly better performance with larger sets of data while trading off more memory used.
+		const checkedCategoriesSet = new Set(
+			checkedCategories.map((category) => category.id)
+		);
+
 		// Mark categories that are part of this item as checked
 		allCategories.forEach((category) => {
-			if (item.category.includes(category._id)) category.checked = true;
+			category.checked = checkedCategoriesSet.has(category.id);
 		});
 
 		res.render('item_form', {
