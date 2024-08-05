@@ -2,10 +2,18 @@ const Category = require('../models/category');
 const Item = require('../models/item');
 const { body, validationResult } = require('express-validator');
 
+//
+const db = require('../db/queries');
+
 // Open page with list of categories page
 exports.category_list = async function (req, res, next) {
 	try {
-		const allCategories = await Category.find({}).sort({ name: 1 }).exec();
+		const allCategories = await db.getCategories();
+
+		allCategories.forEach((element) => {
+			element.url = `/catalog/categories/${element.id}`;
+		});
+
 		res.render('category_list', { categories: allCategories });
 	} catch (error) {
 		return next(error);
@@ -16,12 +24,18 @@ exports.category_list = async function (req, res, next) {
 exports.category_detail = async function (req, res, next) {
 	try {
 		const [category, itemsInCategory] = await Promise.all([
-			Category.findById(req.params.id).exec(),
-			Item.find({ category: req.params.id })
-				.populate('category')
-				.sort({ name: 1 })
-				.exec(),
+			db.getCategoryById(req.params.id),
+			db.getItemsInCategory(req.params.id),
 		]);
+
+		if (category === null) res.sendStatus(404);
+
+		category.url = `/catalog/categories/${category.id}`;
+
+		itemsInCategory.forEach((element) => {
+			element.url = `/catalog/items/${element.id}`;
+		});
+
 		res.render('item_list', {
 			title: `Category: ${category.name}`,
 			items: itemsInCategory,
