@@ -8,7 +8,7 @@ const getCategories = async () => {
 		return rows;
 	} catch (error) {
 		console.error('Error fetching categories: ', error);
-		throw new Error('Error fetching categories');
+		throw error;
 	}
 };
 
@@ -21,7 +21,7 @@ const getCategoryById = async (id) => {
 		return rows;
 	} catch (error) {
 		console.error('Error fetching category: ', error);
-		throw new Error('Error fetching category');
+		throw error;
 	}
 };
 
@@ -40,8 +40,53 @@ const getItemsInCategory = async (categoryId) => {
 
 		return rows;
 	} catch (error) {
-		console.log('Error fetching list of items by category: ', error);
-		throw new Error('Error fetching items in category');
+		console.error('Error fetching list of items by category: ', error);
+		throw error;
+	}
+};
+
+const insertCategory = async (name, description) => {
+	try {
+		await pool.query(
+			`
+            INSERT INTO categories (name, description)
+            VALUES ($1, $2)
+            `,
+			[name, description]
+		);
+	} catch (error) {
+		console.error('Error inserting category: ', error);
+		throw error;
+	}
+};
+
+const deleteCategoryById = async (categoryId) => {
+	try {
+		// Remove all the category references to the items
+		await pool.query(` DELETE FROM item_categories WHERE category_id = $1`, [
+			categoryId,
+		]);
+
+		// Remove the category
+		await pool.query(` DELETE FROM categories WHERE id = $1 `, [categoryId]);
+	} catch (error) {
+		console.error('Error deleting category: ', error);
+		throw error;
+	}
+};
+
+const updateCategoryById = async (categoryId, name, description) => {
+	try {
+		await pool.query(
+			`
+        UPDATE categories
+        SET name = $1, description = $2
+        WHERE id = $3`,
+			[name, description, categoryId]
+		);
+	} catch (error) {
+		console.error('Error while updating a category: ', error);
+		throw error;
 	}
 };
 
@@ -49,4 +94,7 @@ module.exports = {
 	getCategories,
 	getCategoryById,
 	getItemsInCategory,
+	insertCategory,
+	deleteCategoryById,
+	updateCategoryById,
 };

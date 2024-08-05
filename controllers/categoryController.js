@@ -70,12 +70,6 @@ exports.category_new_post = [
 			// Extract the errors
 			const errors = validationResult(req);
 
-			// Create the category object
-			const category = new Category({
-				name: req.body.name,
-				description: req.body.description,
-			});
-
 			if (!errors.isEmpty()) {
 				// The form has errors, Render the form again with filled fields and error messages.
 				res.render('category_form', {
@@ -85,7 +79,7 @@ exports.category_new_post = [
 				});
 			} else {
 				//Data from the form is valid. Save the new category
-				await category.save();
+				await db.insertCategory(req.body.name, req.body.description);
 				res.redirect('/catalog/categories');
 			}
 		} catch (error) {
@@ -95,35 +89,33 @@ exports.category_new_post = [
 ];
 
 //
-exports.category_delete_get = async function (req, res, next) {
-	// Search for all items in this category
-	const [category, allItemsInCategory] = await Promise.all([
-		Category.findById(req.params.id).exec(),
-		Item.find({ category: req.params.id }, 'name description').exec(),
-	]);
-	if (category === null) {
-		// Category hasn't been found
-		res.redirect('/catalog/categories');
-	}
+exports.category_delete_get = async function (req, res) {
+	try {
+		// Search for all items in this category
+		const [category, allItemsInCategory] = await Promise.all([
+			db.getCategoryById(req.params.id),
+			db.getItemsInCategory(req.params.id),
+		]);
 
-	res.render('category_delete', {
-		category: category,
-		allItemsInCategory: allItemsInCategory,
-	});
+		if (category === null) {
+			// Category hasn't been found
+			res.redirect('/catalog/categories');
+			return;
+		}
+
+		res.render('category_delete', {
+			category: category,
+			allItemsInCategory: allItemsInCategory,
+		});
+	} catch (error) {
+		return next(error);
+	}
 };
 
 //
 exports.category_delete_post = async function (req, res, next) {
-	// Search for all items in this category
 	try {
-		Promise.all([
-			Category.findByIdAndDelete(req.params.id).exec(),
-			Item.updateMany(
-				{ category: req.params.id },
-				{ $pull: { category: req.params.id } }
-			).exec(),
-		]);
-
+		await db.deleteCategoryById(req.params.id);
 		res.redirect('/catalog/categories');
 	} catch (error) {
 		console.error('Error deleting category', error);
@@ -134,12 +126,12 @@ exports.category_delete_post = async function (req, res, next) {
 //
 exports.category_update_get = async function (req, res, next) {
 	try {
-		const category = await Category.findById(req.params.id).exec();
+		const category = await db.getCategoryById(req.params.id);
 
 		if (category === null) {
-			const error = new Error("Couldn't find the category!");
-			return next(error);
+			throw new Error("Couldn't find the category!");
 		}
+
 		res.render('category_form', {
 			name: category.name,
 			description: category.description,
@@ -172,11 +164,11 @@ exports.category_update_post = [
 				});
 			} else {
 				// Proceed updating the document
-				await Category.findByIdAndUpdate(req.params.id, {
-					name: req.body.name,
-					description: req.body.description,
-					_id: req.params.id,
-				});
+				await db.updateCategoryById(
+					req.params.id,
+					req.body.name,
+					req.body.description
+				);
 				res.redirect('/catalog/categories');
 			}
 		} catch (error) {
