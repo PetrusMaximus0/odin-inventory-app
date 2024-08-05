@@ -1,6 +1,6 @@
 const pool = require('./pool');
 
-const getCategories = async () => {
+const getAll = async () => {
 	try {
 		const { rows } = await pool.query(
 			'SELECT * FROM categories ORDER BY name ASC'
@@ -12,7 +12,7 @@ const getCategories = async () => {
 	}
 };
 
-const getCategoryById = async (id) => {
+const getById = async (id) => {
 	try {
 		const { rows } = await pool.query(
 			'SELECT * FROM categories WHERE id = $1',
@@ -45,7 +45,7 @@ const getItemsInCategory = async (categoryId) => {
 	}
 };
 
-const insertCategory = async (name, description) => {
+const insert = async (name, description) => {
 	try {
 		await pool.query(
 			`
@@ -60,7 +60,7 @@ const insertCategory = async (name, description) => {
 	}
 };
 
-const deleteCategoryById = async (categoryId) => {
+const deleteById = async (categoryId) => {
 	try {
 		// Remove all the category references to the items
 		await pool.query(` DELETE FROM item_categories WHERE category_id = $1`, [
@@ -75,7 +75,7 @@ const deleteCategoryById = async (categoryId) => {
 	}
 };
 
-const updateCategoryById = async (categoryId, name, description) => {
+const updateById = async (categoryId, name, description) => {
 	try {
 		await pool.query(
 			`
@@ -91,10 +91,10 @@ const updateCategoryById = async (categoryId, name, description) => {
 };
 
 module.exports = {
-	getCategories,
-	getCategoryById,
+	getAll,
+	getById,
 	getItemsInCategory,
-	insertCategory,
-	deleteCategoryById,
-	updateCategoryById,
+	insert,
+	deleteById,
+	updateById,
 };

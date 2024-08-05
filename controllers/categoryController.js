@@ -1,12 +1,12 @@
 const { body, validationResult } = require('express-validator');
 
 //
-const db = require('../db/queries');
+const dbCategories = require('../db/categoryQueries');
 
 // Open page with list of categories page
 exports.category_list = async function (req, res, next) {
 	try {
-		const allCategories = await db.getCategories();
+		const allCategories = await dbCategories.getAll();
 
 		allCategories.forEach((element) => {
 			element.url = `/catalog/categories/${element.id}`;
@@ -22,8 +22,8 @@ exports.category_list = async function (req, res, next) {
 exports.category_detail = async function (req, res, next) {
 	try {
 		const [category, itemsInCategory] = await Promise.all([
-			db.getCategoryById(req.params.id),
-			db.getItemsInCategory(req.params.id),
+			dbCategories.getById(req.params.id),
+			dbCategories.getItemsInCategory(req.params.id),
 		]);
 
 		if (category === null) res.sendStatus(404);
@@ -77,7 +77,7 @@ exports.category_new_post = [
 				});
 			} else {
 				//Data from the form is valid. Save the new category
-				await db.insertCategory(req.body.name, req.body.description);
+				await dbCategories.insert(req.body.name, req.body.description);
 				res.redirect('/catalog/categories');
 			}
 		} catch (error) {
@@ -91,8 +91,8 @@ exports.category_delete_get = async function (req, res) {
 	try {
 		// Search for all items in this category
 		const [category, allItemsInCategory] = await Promise.all([
-			db.getCategoryById(req.params.id),
-			db.getItemsInCategory(req.params.id),
+			dbCategories.getById(req.params.id),
+			dbCategories.getItemsInCategory(req.params.id),
 		]);
 
 		if (category === null) {
@@ -113,7 +113,7 @@ exports.category_delete_get = async function (req, res) {
 //
 exports.category_delete_post = async function (req, res, next) {
 	try {
-		await db.deleteCategoryById(req.params.id);
+		await dbCategories.deleteById(req.params.id);
 		res.redirect('/catalog/categories');
 	} catch (error) {
 		console.error('Error deleting category', error);
@@ -124,7 +124,7 @@ exports.category_delete_post = async function (req, res, next) {
 //
 exports.category_update_get = async function (req, res, next) {
 	try {
-		const category = await db.getCategoryById(req.params.id);
+		const category = await dbCategories.getById(req.params.id);
 
 		if (category === null) {
 			throw new Error("Couldn't find the category!");
@@ -162,7 +162,7 @@ exports.category_update_post = [
 				});
 			} else {
 				// Proceed updating the document
-				await db.updateCategoryById(
+				await dbCategories.updateById(
 					req.params.id,
 					req.body.name,
 					req.body.description
