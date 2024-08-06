@@ -1,7 +1,7 @@
 const { Pool } = require('pg');
 
 const connectionStringLocal =
-	'postgresql://petrus:48hfresh@localhost:5432/top_users';
+	'postgresql://petrus:48hfresh@localhost:5432/inventory_app';
 
 const pool =
 	process.env.NODE_ENV === 'production'
@@ -29,4 +29,4 @@ const getPgVersion = async () => {
 
 getPgVersion();
 
-module.exports = { pool };
+module.exports = pool;
