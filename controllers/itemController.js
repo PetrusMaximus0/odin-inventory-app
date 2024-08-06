@@ -34,14 +34,6 @@ exports.item_new_get = async function (req, res, next) {
 
 // Create an item POST
 exports.item_new_post = [
-	// Convert the category to an array
-	(req, res, next) => {
-		if (!Array.isArray(req.body.category)) {
-			req.body.genre =
-				typeof req.body.genre === 'undefined' ? [] : [req.body.genre];
-		}
-		next();
-	},
 	// Validate and sanitize fields
 	body('name').trim().isLength({ min: 1, max: 100 }).escape(),
 	body('description')
@@ -68,13 +60,18 @@ exports.item_new_post = [
 			const errors = validationResult(req);
 
 			// Create a new item based on the form values
-			const newItem = new Item({
+			const newItem = {
 				name: req.body.name,
 				description: req.body.description,
-				category: req.body.category,
+				category:
+					typeof req.body.category === 'undefined'
+						? []
+						: Array.isArray(req.body.category)
+						? req.body.category
+						: [req.body.category],
 				units_in_stock: req.body.units_in_stock,
 				price: req.body.price,
-			});
+			};
 
 			if (!errors.isEmpty()) {
 				// There are errors, render the form again with the sanitized values and errors.
@@ -154,51 +151,39 @@ exports.item_update_post = [
 		try {
 			// Extract the errors if any exist
 			const errors = validationResult(req);
-
-			// Create a new object with the old id for replacing the document.
-			const newItem = new Item({
+			const newItem = {
 				name: req.body.name,
 				description: req.body.description,
 				category:
 					typeof req.body.category === 'undefined'
 						? []
-						: req.body.category,
+						: Array.isArray(req.body.category)
+						? req.body.category
+						: [req.body.category],
 				units_in_stock: req.body.units_in_stock,
 				price: req.body.price,
-				_id: req.params.id,
-			});
-			//
+			};
+
 			if (!errors.isEmpty()) {
 				//There are errors, render the form again with sanitized values and errors.
-				const allCategories = await Category.find()
-					.sort({ name: 1 })
-					.exec();
+				const allCategories = await categoryQueries.getAll();
 
 				// Mark categories that are part of this item as checked
 				allCategories.forEach((category) => {
-					if (newItem.category.includes(category._id))
-						category.checked = true;
+					category.checked = req.body.category.includes(category.id);
 				});
 
+				//
 				res.render('item_form', {
-					item: {
-						name: req.body.name,
-						description: req.body.description,
-						category:
-							typeof req.body.category === 'undefined'
-								? []
-								: req.body.category,
-						units_in_stock: req.body.units_in_stock,
-						price: req.body.price,
-					},
+					item: newItem,
 					allCategories: allCategories,
 					errors: errors,
 				});
-				return;
 			} else {
-				console.log('Updating item...');
-				await Item.findByIdAndUpdate(req.params.id, newItem);
-				res.redirect('/catalog/items');
+				// Update the item
+				await itemQueries.updateById(req.params.id, newItem);
+
+				res.redirect(`/catalog/items/${req.params.id}/detail`);
 			}
 		} catch (error) {
 			return next(error);
@@ -209,7 +194,7 @@ exports.item_update_post = [
 // Delete an item GET
 exports.item_delete_get = async function (req, res, next) {
 	try {
-		const item = await Item.findById(req.params.id).exec();
+		const item = await itemQueries.getById(req.params.id);
 
 		if (item === null) {
 			const err = new Error("Couldn't find the item");
@@ -226,14 +211,12 @@ exports.item_delete_get = async function (req, res, next) {
 exports.item_delete_post = async function (req, res, next) {
 	try {
 		if (req.body.password === process.env.DELETE_PASSWORD) {
-			await Item.findByIdAndDelete(req.params.id).exec();
+			await itemQueries.deleteById(req.params.id);
 			res.redirect('/catalog/items');
 		} else {
-			const item = await Item.findById(req.params.id).exec();
-			if (item === null) {
-				const err = new Error("Couldn't find the item");
-				return next(err);
-			}
+			const item = await itemQueries.getById(req.params.id);
+			if (item === null)
+				throw new Error(`Couldn't find the item with id: ${req.params.id}`);
 			res.render('item_delete', {
 				error: 'Wrong password',
 				name: item.name,
