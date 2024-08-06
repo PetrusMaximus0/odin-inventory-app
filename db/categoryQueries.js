@@ -3,7 +3,11 @@ const pool = require('./pool');
 const getAll = async () => {
 	try {
 		const { rows } = await pool.query(
-			'SELECT * FROM categories ORDER BY name ASC'
+			`SELECT
+				categories.*,
+				'url' , '/catalog/categories/' || categories.id AS url			
+			FROM categories
+			ORDER BY categories.name ASC`
 		);
 		return rows;
 	} catch (error) {
@@ -15,10 +19,14 @@ const getAll = async () => {
 const getById = async (id) => {
 	try {
 		const { rows } = await pool.query(
-			'SELECT * FROM categories WHERE id = $1',
+			`SELECT
+				categories.*,
+				'url' , '/catalog/categories/' || categories.id AS url
+			FROM categories
+			WHERE id = $1`,
 			[id]
 		);
-		return rows;
+		return rows[0];
 	} catch (error) {
 		console.error('Error fetching category: ', error);
 		throw error;
@@ -30,11 +38,21 @@ const getItemsInCategory = async (categoryId) => {
 	try {
 		const { rows } = await pool.query(
 			`
-            SELECT items.*  
+            SELECT
+				items.*,
+				json_agg(json_build_object(
+					'id', categories.id,
+					'name', categories.name,
+					'description', categories.description,
+					'url', '/catalog/categories/' || categories.id
+					)) AS category,
+				'url' , '/catalog/items/' || items.id AS url
             FROM items
-            JOIN item_categories
-            ON items.id = item_categories.item_id
-            WHERE item_categories.category_id = $1`,
+			LEFT JOIN item_categories ON items.id = item_categories.item_id
+			LEFT JOIN categories ON item_categories.category_id = categories.id
+            WHERE item_categories.category_id = $1
+			GROUP BY items.id
+			ORDER BY items.name ASC`,
 			[categoryId]
 		);
 

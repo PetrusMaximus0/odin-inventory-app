@@ -7,11 +7,6 @@ const dbCategories = require('../db/categoryQueries');
 exports.category_list = async function (req, res, next) {
 	try {
 		const allCategories = await dbCategories.getAll();
-
-		allCategories.forEach((element) => {
-			element.url = `/catalog/categories/${element.id}`;
-		});
-
 		res.render('category_list', { categories: allCategories });
 	} catch (error) {
 		return next(error);
@@ -27,12 +22,6 @@ exports.category_detail = async function (req, res, next) {
 		]);
 
 		if (category === null) res.sendStatus(404);
-
-		category.url = `/catalog/categories/${category.id}`;
-
-		itemsInCategory.forEach((element) => {
-			element.url = `/catalog/items/${element.id}`;
-		});
 
 		res.render('item_list', {
 			title: `Category: ${category.name}`,
