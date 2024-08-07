@@ -8,7 +8,8 @@
 	"scripts": {
 		"start": "node ./bin/www",
 		"devstart": "nodemon --env-file=.env ./bin/www",
-		"serverstart": "npm run devstart && DEBUG=odin-inventory-app:*"
+		"serverstart": "npm run devstart && DEBUG=odin-inventory-app:*",
+		"populateDestructive": "node --env-file=.env populate.js"
 	},
 	"dependencies": {
 		"compression": "^1.7.4",
@@ -20,9 +21,9 @@
 		"helmet": "^7.1.0",
 		"http-errors": "~1.6.3",
 		"luxon": "^3.4.4",
-		"mongoose": "^8.3.1",
 		"morgan": "~1.9.1",
 		"node-sass-middleware": "^1.1.0",
+		"pg": "^8.12.0",
 		"pug": "^3.0.3"
 	},
 	"devDependencies": {

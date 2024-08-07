@@ -11,23 +11,6 @@ const usersRouter = require('./routes/users');
 const catalogRouter = require('./routes/catalog');
 const app = express();
 
-/**Set up databse connection */
-const mongoose = require('mongoose');
-mongoose.set('strictQuery', false);
-const mongoDB = process.env.MONGODB_URI;
-
-main().catch((err) => {
-	console.error('Connection has failed.', err);
-	console.log('retrying....');
-	main();
-});
-
-async function main() {
-	console.log('Attempting connection to mongoose database...');
-	await mongoose.connect(mongoDB);
-	console.log('Connection successfull.');
-}
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
